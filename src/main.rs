@@ -40,6 +40,6 @@ fn main() -> std::io::Result<()> {
                 last_tick = Instant::now();
             }
         }
-        Ok(())
+        Ok::<(), std::io::Error>(())
     })
 }

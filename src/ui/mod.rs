@@ -135,8 +135,8 @@ fn render_system(frame: &mut Frame, area: ratatui::layout::Rect, sys: &SystemInf
             "Kernel",
             sys.kernel_version.as_deref().unwrap_or("unknown"),
         ),
-        kv_line("Distro", &sys.distribution),
-        kv_line("Uptime", &format_uptime(sys.uptime)),
+        kv_line("Distro", sys.distribution.as_str()),
+        kv_line("Uptime", format_uptime(sys.uptime)),
     ];
 
     let widget = Paragraph::new(lines).block(
@@ -157,10 +157,10 @@ fn render_hardware(frame: &mut Frame, area: ratatui::layout::Rect, hw: &Hardware
     let chunks = Layout::vertical([Constraint::Length(5), Constraint::Length(4)]).split(inner);
 
     let cpu_lines = vec![
-        kv_line("CPU", &hw.cpu.name),
-        kv_line("Vendor", &hw.cpu.manufacturer),
-        kv_line("Frequency", &format!("{} MHz", hw.cpu.frequency)),
-        kv_line("Cores", &hw.cpu.cores.to_string()),
+        kv_line("CPU", hw.cpu.name.as_str()),
+        kv_line("Vendor", hw.cpu.manufacturer.as_str()),
+        kv_line("Frequency", format!("{} MHz", hw.cpu.frequency)),
+        kv_line("Cores", hw.cpu.cores.to_string()),
     ];
     frame.render_widget(Paragraph::new(cpu_lines), chunks[0]);
 
@@ -262,7 +262,7 @@ fn render_footer(frame: &mut Frame, area: ratatui::layout::Rect) {
     frame.render_widget(footer, area);
 }
 
-fn kv_line<'a>(key: &'a str, value: &'a str) -> Line<'a> {
+fn kv_line(key: &str, value: impl Into<String>) -> Line<'static> {
     Line::from(vec![
         Span::styled(
             format!("{:<11}: ", key),
@@ -270,7 +270,7 @@ fn kv_line<'a>(key: &'a str, value: &'a str) -> Line<'a> {
                 .fg(Color::Gray)
                 .add_modifier(Modifier::BOLD),
         ),
-        Span::styled(value, Style::default().fg(Color::White)),
+        Span::styled(value.into(), Style::default().fg(Color::White)),
     ])
 }
 
