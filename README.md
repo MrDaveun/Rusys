@@ -1,6 +1,26 @@
 # Rusys
 
-A **Rust** TUI (Terminal User Interface) tool for monitoring system, hardware, and network information using [`ratatui`](https://crates.io/crates/ratatui) and [`sysinfo`](https://crates.io/crates/sysinfo).
+A lightweight **Rust** terminal user interface (TUI) system monitor built with [`ratatui`](https://crates.io/crates/ratatui), [`crossterm`](https://crates.io/crates/crossterm), and [`sysinfo`](https://crates.io/crates/sysinfo).
+
+## Overview
+
+Rusys inspects your local machine and renders live operating system, hardware, and network metrics inside an interactive terminal dashboard that refreshes every second.
+
+## Collected Information & Usage
+
+All metrics are read locally in real time and used **exclusively for on-screen display** inside the terminal interface. Nothing is written to disk, logged, or transmitted over any network.
+
+| Module | Collected Metrics | How It Is Used |
+| :--- | :--- | :--- |
+| **System** (`src/system/mod.rs`) | OS name, CPU architecture, OS family, hostname, OS version, kernel version, distribution ID, and system uptime | Shown in the top status bar (hostname and OS) and the **System** panel with human-readable uptime formatting |
+| **Hardware** (`src/hardware/mod.rs`) | CPU brand/model, vendor ID, clock frequency (MHz), logical core count, and total / used / available RAM | Shown in the **Hardware** panel with CPU specs and a live **RAM Usage** progress gauge in KB/MB/GB |
+| **Network** (`src/network/mod.rs`) | Network interface names, MAC addresses, and cumulative received (`RX`) / transmitted (`TX`) byte counters | Shown in the navigable **Network** table with formatted byte totals |
+
+## Controls
+
+- **`q` / `Esc`**: Quit the application and restore the terminal state
+- **`r`**: Trigger an immediate manual refresh
+- **`↑` / `↓`** or **`j` / `k`**: Navigate rows in the network interfaces table
 
 ## Project Structure
 
@@ -8,54 +28,51 @@ A **Rust** TUI (Terminal User Interface) tool for monitoring system, hardware, a
 Rusys/
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml       # Cross-platform compile, test, and build checks
-│       └── release.yml  # Release executable builds for Linux, Windows, and macOS
+│       ├── ci.yml       # Cross-platform check, test, and build workflow
+│       └── release.yml  # Multi-platform release executable packaging
 ├── Cargo.toml
 ├── LICENSE
 ├── README.md
 └── src/
-    ├── main.rs          # Ratatui TUI entry point and event loop
+    ├── main.rs          # Terminal initialization, 1s refresh loop, and key handling
     ├── ui/
-    │   └── mod.rs       # Terminal dashboard layout (System, Hardware, Network)
+    │   └── mod.rs       # Ratatui layout, widgets, formatters, and unit tests
     ├── system/
-    │   └── mod.rs       # OS info collection (OS, architecture, family, hostname, kernel, distro, uptime)
+    │   └── mod.rs       # OS and host metadata collection and unit tests
     ├── hardware/
-    │   └── mod.rs       # CPU info (brand, vendor, frequency, cores) and RAM info collection
+    │   └── mod.rs       # CPU and memory collection
     └── network/
-        └── mod.rs       # Network info collection (interfaces, MAC address, total RX/TX bytes)
+        └── mod.rs       # Network interface and traffic counter collection
 ```
 
-## Current Implementation
+## Releases
 
-- **System (`src/system/mod.rs`)**: `SystemInfo` and `collect_info()` collecting operating system, architecture, family, hostname, OS version, kernel version, distribution, and uptime.
-- **Hardware (`src/hardware/mod.rs`)**: `CpuInfo`, `RamInfo`, `HardwareInfo`, `get_cpu()`, `get_ram()`, and `collect_info()`.
-- **Network (`src/network/mod.rs`)**: `InterfaceInfo`, `NetworkInfo`, `get_interfaces()`, and `get_network_info()`.
-- **UI (`src/ui/mod.rs`)**: Ratatui dashboard displaying System info, CPU details, a live RAM usage gauge, and a navigable Network interfaces table.
-- **Main (`src/main.rs`)**: Event loop with 1-second auto-refresh and keyboard controls (`q`/`Esc` to quit, `r` to refresh, `↑`/`↓` or `j`/`k` to select network interface).
+Pre-built release binaries are generated automatically by `.github/workflows/release.yml` for version tags (`v*`) and manual workflow dispatches across the following platforms and architectures:
 
-## Running
+| Platform | Architecture | Target Triple | Artifact |
+| :--- | :--- | :--- | :--- |
+| **Linux** | x86_64 (64-bit) | `x86_64-unknown-linux-gnu` | `rusys-linux-x86_64.tar.gz` |
+| **Windows** | x86_64 (64-bit) | `x86_64-pc-windows-msvc` | `rusys-windows-x86_64.zip` |
+| **macOS** | Apple Silicon (ARM64) | `aarch64-apple-darwin` | `rusys-macos-arm64.tar.gz` |
+| **macOS** | Intel (x86_64) | `x86_64-apple-darwin` | `rusys-macos-x86_64.tar.gz` |
 
-With Rust and Cargo installed:
+Download the archive for your platform from the [Releases](../../releases) page, extract the binary, and run `./rusys` (or `rusys.exe` on Windows).
+
+## Building from Source
+
+Requires Rust and Cargo:
 
 ```bash
+# Run the interactive TUI
 cargo run
-```
 
-To check compilation and run tests:
-
-```bash
-cargo check
+# Verify compilation and run unit tests
+cargo check --all-targets
 cargo test
+
+# Build an optimized release binary
+cargo build --release
 ```
-
-## GitHub Actions
-
-- **CI (`ci.yml`)**: Runs `cargo check`, `cargo test`, and `cargo build` on Linux, Windows, and macOS on every push and pull request.
-- **Release Executables (`release.yml`)**: Builds release binaries for Linux (`x86_64`), Windows (`x86_64`), and macOS (`arm64` and `x86_64`) via manual workflow dispatch or `v*` tags (automatically publishing GitHub Release assets on tags).
-
-## Workflow
-
-This repository is being structured using **Google AI Studio** with the **Gemini 4 Hydrogen** model to organize modules and prepare commits prior to building with Cargo.
 
 ## License
 
