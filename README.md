@@ -4,7 +4,7 @@ A lightweight **Rust** terminal user interface (TUI) system monitor built with [
 
 ## Overview
 
-Rusys inspects your local machine and renders live operating system, hardware, and network metrics inside an interactive terminal dashboard that refreshes every second.
+Rusys inspects your local machine and renders live operating system, hardware, storage, and network metrics inside an interactive terminal dashboard that refreshes every second.
 
 ## Collected Information & Usage
 
@@ -13,14 +13,15 @@ All metrics are read locally in real time and used **exclusively for on-screen d
 | Module | Collected Metrics | How It Is Used |
 | :--- | :--- | :--- |
 | **System** (`src/system/mod.rs`) | OS name, CPU architecture, OS family, hostname, OS version, kernel version, distribution ID, and system uptime | Shown in the top status bar (hostname and OS) and the **System** panel with human-readable uptime formatting |
-| **Hardware** (`src/hardware/mod.rs`) | CPU brand/model, vendor ID, clock frequency (MHz), logical core count, and total / used / available RAM | Shown in the **Hardware** panel with CPU specs and a live **RAM Usage** progress gauge in KB/MB/GB |
-| **Network** (`src/network/mod.rs`) | Network interface names, MAC addresses, and cumulative received (`RX`) / transmitted (`TX`) byte counters | Shown in the navigable **Network** table with formatted byte totals |
+| **Hardware** (`src/hardware/mod.rs`) | CPU brand/model, vendor ID, clock frequency (MHz), logical core count, real-time global CPU usage (%), total/used/available RAM, and mounted disk/storage volumes (mount point, filesystem, used/total/available space) | Shown in the **Hardware** panel (CPU specs + live CPU % gauge + RAM gauge) and the scrollable **Storage** table |
+| **Network** (`src/network/mod.rs`) | Network interface names, MAC addresses, and cumulative received (`RX`) / transmitted (`TX`) byte counters | Shown in the scrollable **Network** table with formatted byte totals |
 
 ## Controls
 
 - **`q` / `Esc`**: Quit the application and restore the terminal state
 - **`r`**: Trigger an immediate manual refresh
-- **`↑` / `↓`** or **`j` / `k`**: Navigate rows in the network interfaces table
+- **`Tab`**: Switch active focus between the **Storage** and **Network** tables
+- **`↑` / `↓`** or **`j` / `k`**: Navigate rows in the active table
 
 ## Project Structure
 
@@ -40,7 +41,7 @@ Rusys/
     ├── system/
     │   └── mod.rs       # OS and host metadata collection and unit tests
     ├── hardware/
-    │   └── mod.rs       # CPU and memory collection
+    │   └── mod.rs       # Persistent CPU usage, RAM, and disk/storage collection and tests
     └── network/
         └── mod.rs       # Network interface and traffic counter collection
 ```
