@@ -1,42 +1,45 @@
 mod hardware;
 mod network;
 mod system;
+mod ui;
 
-fn main() {
-    let sys_info = system::collect_info();
-    let hw_info = hardware::collect_info();
-    let net_info = network::get_network_info();
+use std::time::{Duration, Instant};
 
-    println!("=== System ===");
-    println!("OS: {}", sys_info.os);
-    println!("Arch: {}", sys_info.arch);
-    println!("Family: {}", sys_info.family);
-    println!("Hostname: {}", sys_info.hostname.expect("Hostname unavailable"));
-    println!(
-        "OS Version: {}",
-        sys_info.os_version.as_deref().unwrap_or("unknown")
-    );
-    println!(
-        "Kernel Version: {}",
-        sys_info.kernel_version.as_deref().unwrap_or("unknown")
-    );
-    println!("Distribution: {}", sys_info.distribution);
-    println!("Uptime: {}s", sys_info.uptime);
+use crossterm::event::{self, Event, KeyCode, KeyEventKind};
+use ui::AppData;
 
-    println!("\n=== Hardware ===");
-    println!("CPU: {}", hw_info.cpu.name);
-    println!("Manufacturer: {}", hw_info.cpu.manufacturer);
-    println!("Frequency: {} MHz", hw_info.cpu.frequency);
-    println!("Cores: {}", hw_info.cpu.cores);
-    println!("RAM Total: {} bytes", hw_info.ram.total);
-    println!("RAM Used: {} bytes", hw_info.ram.used);
-    println!("RAM Available: {} bytes", hw_info.ram.available);
+fn main() -> std::io::Result<()> {
+    let mut app = AppData::new();
+    let refresh_interval = Duration::from_secs(1);
+    let mut last_tick = Instant::now();
 
-    println!("\n=== Network ===");
-    for iface in net_info.interfaces {
-        println!(
-            "{} | MAC: {} | RX: {} B | TX: {} B",
-            iface.name, iface.mac_address, iface.received, iface.transmitted
-        );
-    }
+    ratatui::run(|terminal| {
+        loop {
+            terminal.draw(|frame| ui::draw(frame, &mut app))?;
+
+            let timeout = refresh_interval.saturating_sub(last_tick.elapsed());
+            if event::poll(timeout)? {
+                if let Event::Key(key) = event::read()? {
+                    if key.kind == KeyEventKind::Press {
+                        match key.code {
+                            KeyCode::Char('q') | KeyCode::Esc => break,
+                            KeyCode::Char('r') => {
+                                app.refresh();
+                                last_tick = Instant::now();
+                            }
+                            KeyCode::Down | KeyCode::Char('j') => app.select_next(),
+                            KeyCode::Up | KeyCode::Char('k') => app.select_prev(),
+                            _ => {}
+                        }
+                    }
+                }
+            }
+
+            if last_tick.elapsed() >= refresh_interval {
+                app.refresh();
+                last_tick = Instant::now();
+            }
+        }
+        Ok(())
+    })
 }

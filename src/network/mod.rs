@@ -20,8 +20,8 @@ pub fn get_interfaces() -> Vec<InterfaceInfo> {
         interfaces.push(InterfaceInfo {
             name: name.to_string(),
             mac_address: data.mac_address().to_string(),
-            received: data.received(),
-            transmitted: data.transmitted(),
+            received: data.total_received(),
+            transmitted: data.total_transmitted(),
         });
     }
 

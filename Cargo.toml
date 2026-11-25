@@ -2,6 +2,10 @@
 name = "rusys"
 version = "0.1.0"
 edition = "2021"
+description = "A Rust TUI tool to collect and monitor system, hardware, and network information"
+license = "MIT"
 
 [dependencies]
+crossterm = "0.29"
+ratatui = "0.30"
 sysinfo = "0.40"

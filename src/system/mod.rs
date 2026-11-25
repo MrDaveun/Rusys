@@ -23,3 +23,16 @@ pub fn collect_info() -> SystemInfo {
         uptime: System::uptime(),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::collect_info;
+
+    #[test]
+    fn collects_system_info() {
+        let info = collect_info();
+        assert!(!info.os.is_empty());
+        assert!(!info.arch.is_empty());
+        assert!(!info.family.is_empty());
+    }
+}
