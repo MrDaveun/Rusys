@@ -1,5 +1,6 @@
 mod hardware;
 mod network;
+mod process;
 mod system;
 mod ui;
 
@@ -27,6 +28,7 @@ fn main() -> std::io::Result<()> {
                                 app.refresh();
                                 last_tick = Instant::now();
                             }
+                            KeyCode::Char('s') => app.cycle_process_sort(),
                             KeyCode::Tab => app.toggle_panel(),
                             KeyCode::Down | KeyCode::Char('j') => app.select_next(),
                             KeyCode::Up | KeyCode::Char('k') => app.select_prev(),

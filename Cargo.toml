@@ -1,6 +1,6 @@
 [package]
 name = "rusys"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 description = "A Rust TUI tool to collect and monitor system, hardware, and network information"
 license = "MIT"

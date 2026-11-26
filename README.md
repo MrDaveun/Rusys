@@ -4,7 +4,7 @@ A lightweight **Rust** terminal user interface (TUI) system monitor built with [
 
 ## Overview
 
-Rusys inspects your local machine and renders live operating system, hardware, storage, and network metrics inside an interactive terminal dashboard that refreshes every second.
+Rusys inspects your local machine and renders live operating system, hardware, per-core CPU, memory/swap, storage, network, and process metrics inside an interactive terminal dashboard that refreshes every second.
 
 ## Collected Information & Usage
 
@@ -13,15 +13,17 @@ All metrics are read locally in real time and used **exclusively for on-screen d
 | Module | Collected Metrics | How It Is Used |
 | :--- | :--- | :--- |
 | **System** (`src/system/mod.rs`) | OS name, CPU architecture, OS family, hostname, OS version, kernel version, distribution ID, and system uptime | Shown in the top status bar (hostname and OS) and the **System** panel with human-readable uptime formatting |
-| **Hardware** (`src/hardware/mod.rs`) | CPU brand/model, vendor ID, clock frequency (MHz), logical core count, real-time global CPU usage (%), total/used/available RAM, and mounted disk/storage volumes (mount point, filesystem, used/total/available space) | Shown in the **Hardware** panel (CPU specs + live CPU % gauge + RAM gauge) and the scrollable **Storage** table |
-| **Network** (`src/network/mod.rs`) | Network interface names, MAC addresses, and cumulative received (`RX`) / transmitted (`TX`) byte counters | Shown in the scrollable **Network** table with formatted byte totals |
+| **Hardware** (`src/hardware/mod.rs`) | CPU brand/model, vendor ID, clock frequency (MHz), logical core count, global & per-core CPU usage (%) and frequency, total/used/available RAM, total/used/free Swap memory, and mounted disk/storage volumes | Shown in the **Hardware** panel (CPU, RAM, and Swap gauges), the scrollable **CPU Cores** panel, and the **Storage** table |
+| **Processes** (`src/process/mod.rs`) | Running process PID, name, CPU usage (%), resident memory, virtual memory, and execution state | Shown in the scrollable **Processes** table with live sorting by `CPU%`, `MEM`, or `PID` and a detail strip for the selected process |
+| **Network** (`src/network/mod.rs`) | Network interface names, MAC addresses, IPv4/IPv6 addresses, MTU, live download/upload speeds, cumulative & delta RX/TX bytes, packet counts, and error counters | Shown in the scrollable **Network** table (`Down/s`, `Up/s`, `RX Total`, `TX Total`) with a live detail strip for the selected interface |
 
 ## Controls
 
 - **`q` / `Esc`**: Quit the application and restore the terminal state
 - **`r`**: Trigger an immediate manual refresh
-- **`Tab`**: Switch active focus between the **Storage** and **Network** tables
-- **`↑` / `↓`** or **`j` / `k`**: Navigate rows in the active table
+- **`s`**: Cycle process list sorting (`CPU%` → `MEM` → `PID`)
+- **`Tab`**: Switch active focus between **Processes**, **CPU Cores**, **Storage**, and **Network**
+- **`↑` / `↓`** or **`j` / `k`**: Navigate rows in the active panel
 
 ## Project Structure
 
@@ -41,9 +43,11 @@ Rusys/
     ├── system/
     │   └── mod.rs       # OS and host metadata collection and unit tests
     ├── hardware/
-    │   └── mod.rs       # Persistent CPU usage, RAM, and disk/storage collection and tests
+    │   └── mod.rs       # Persistent global/per-core CPU, RAM, Swap, and disk collection
+    ├── process/
+    │   └── mod.rs       # Persistent process monitor (PID, CPU%, memory, state, sorting)
     └── network/
-        └── mod.rs       # Network interface and traffic counter collection
+        └── mod.rs       # Persistent network collector (IPs, MTU, speeds, totals, packets, errors)
 ```
 
 ## Releases
