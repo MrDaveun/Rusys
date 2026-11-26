@@ -1,10 +1,41 @@
-# Rusys
+<div align="center">
+  <img src="assets/rusys-logo.webp" alt="Rusys Animated Logo" width="480" />
 
-A lightweight **Rust** terminal user interface (TUI) system monitor built with [`ratatui`](https://crates.io/crates/ratatui), [`crossterm`](https://crates.io/crates/crossterm), and [`sysinfo`](https://crates.io/crates/sysinfo).
+  <h1>Rusys</h1>
+
+  <p>
+    <strong>A lightweight, real-time Rust terminal system monitor built with
+    <a href="https://crates.io/crates/ratatui">Ratatui</a>,
+    <a href="https://crates.io/crates/crossterm">Crossterm</a>, and
+    <a href="https://crates.io/crates/sysinfo">Sysinfo</a>.</strong>
+  </p>
+
+  <p>
+    <img src="https://img.shields.io/badge/Rust-2024%20Edition-orange?style=for-the-badge&logo=rust" alt="Rust 2024 Edition" />
+    <img src="https://img.shields.io/badge/Version-v0.3.0-00bcd4?style=for-the-badge" alt="Version v0.3.0" />
+    <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="MIT License" />
+    <img src="https://img.shields.io/badge/Platforms-Linux%20%7C%20Windows%20%7C%20macOS-blue?style=for-the-badge" alt="Cross-Platform" />
+  </p>
+
+  <p>
+    <a href="#overview">Overview</a> •
+    <a href="#collected-information--usage">Metrics</a> •
+    <a href="#controls">Controls</a> •
+    <a href="#project-structure">Structure</a> •
+    <a href="#releases">Releases</a> •
+    <a href="#building-from-source">Build</a>
+  </p>
+</div>
+
+---
 
 ## Overview
 
-Rusys inspects your local machine and renders live operating system, hardware, per-core CPU, memory/swap, storage, network, and process metrics inside an interactive terminal dashboard that refreshes every second.
+**Rusys** inspects your local machine and renders live operating system, hardware, per-core CPU, memory/swap, storage, network, and process metrics inside an interactive terminal dashboard that refreshes every second.
+
+- **Real-time & Local-only**: All telemetry is read directly from your OS without logging, disk writes, or network transmission.
+- **Persistent Collectors**: Tracks continuous CPU deltas, per-core frequencies, Swap usage, process activity, and live network throughput (`Down/s` and `Up/s`).
+- **Responsive TUI**: Automatically adapts layout between wide and compact terminal windows.
 
 ## Collected Information & Usage
 
@@ -19,11 +50,13 @@ All metrics are read locally in real time and used **exclusively for on-screen d
 
 ## Controls
 
-- **`q` / `Esc`**: Quit the application and restore the terminal state
-- **`r`**: Trigger an immediate manual refresh
-- **`s`**: Cycle process list sorting (`CPU%` → `MEM` → `PID`)
-- **`Tab`**: Switch active focus between **Processes**, **CPU Cores**, **Storage**, and **Network**
-- **`↑` / `↓`** or **`j` / `k`**: Navigate rows in the active panel
+| Key | Action |
+| :--- | :--- |
+| **`q` / `Esc`** | Quit the application and restore the terminal state |
+| **`r`** | Trigger an immediate manual refresh |
+| **`s`** | Cycle process list sorting (`CPU%` → `MEM` → `PID`) |
+| **`Tab`** | Switch active focus between **Processes**, **CPU Cores**, **Storage**, and **Network** |
+| **`↑` / `↓`** or **`j` / `k`** | Navigate rows in the active panel |
 
 ## Project Structure
 
@@ -31,23 +64,25 @@ All metrics are read locally in real time and used **exclusively for on-screen d
 Rusys/
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml       # Cross-platform check, test, and build workflow
-│       └── release.yml  # Multi-platform release executable packaging
+│       ├── ci.yml          # Cross-platform check, test, and build workflow
+│       └── release.yml     # Multi-platform release executable packaging
+├── assets/
+│   └── rusys-logo.webp     # Animated Rusys logo for documentation
 ├── Cargo.toml
 ├── LICENSE
 ├── README.md
 └── src/
-    ├── main.rs          # Terminal initialization, 1s refresh loop, and key handling
+    ├── main.rs             # Terminal initialization, 1s refresh loop, and key handling
     ├── ui/
-    │   └── mod.rs       # Ratatui layout, widgets, formatters, and unit tests
+    │   └── mod.rs          # Ratatui layout, widgets, formatters, and unit tests
     ├── system/
-    │   └── mod.rs       # OS and host metadata collection and unit tests
+    │   └── mod.rs          # OS and host metadata collection and unit tests
     ├── hardware/
-    │   └── mod.rs       # Persistent global/per-core CPU, RAM, Swap, and disk collection
+    │   └── mod.rs          # Persistent global/per-core CPU, RAM, Swap, and disk collection
     ├── process/
-    │   └── mod.rs       # Persistent process monitor (PID, CPU%, memory, state, sorting)
+    │   └── mod.rs          # Persistent process monitor (PID, CPU%, memory, state, sorting)
     └── network/
-        └── mod.rs       # Persistent network collector (IPs, MTU, speeds, totals, packets, errors)
+        └── mod.rs          # Persistent network collector (IPs, MTU, speeds, totals, packets, errors)
 ```
 
 ## Releases
